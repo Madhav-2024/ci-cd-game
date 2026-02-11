@@ -1,7 +1,9 @@
 provider "aws" {
   region = "eu-north-1"
 }
-
+data "aws_vpc" "default" {
+  default = true
+}
 resource "aws_instance" "game_server" {
   ami           = "ami-073130f74f5ffb161"   
   instance_type = "t3.small"
@@ -23,7 +25,8 @@ resource "aws_instance" "game_server" {
 }
 
 resource "aws_security_group" "game088" {
-  name = "game088"
+  name   = "game088"
+  vpc_id = data.aws_vpc.default.id   # ✅ CRITICAL FIX
 
   ingress {
     from_port   = 22
@@ -46,6 +49,7 @@ resource "aws_security_group" "game088" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 output "public_ip" {
   value = aws_instance.game_server.public_ip
