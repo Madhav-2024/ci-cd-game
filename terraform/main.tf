@@ -3,19 +3,19 @@ provider "aws" {
 }
 
 resource "aws_instance" "game_server" {
-  ami           = "ami-073130f74f5ffb161" 
+  ami           = "ami-073130f74f5ffb161"   
   instance_type = "t3.small"
   key_name      = "Madhav_s"
 
-  security_groups = [aws_security_group.game088.name]
+  vpc_security_group_ids = [aws_security_group.game088.id]  # ✅ FIX
 
   user_data = <<-EOF
-              #!/bin/bash
-              apt update -y
-              apt install nginx -y
-              systemctl start nginx
-              systemctl enable nginx
-              EOF
+    #!/bin/bash
+    apt update -y
+    apt install nginx -y
+    systemctl start nginx
+    systemctl enable nginx
+  EOF
 
   tags = {
     Name = "Game-Server"
@@ -46,6 +46,7 @@ resource "aws_security_group" "game088" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 output "public_ip" {
   value = aws_instance.game_server.public_ip
 }
